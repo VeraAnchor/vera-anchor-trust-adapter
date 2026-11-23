@@ -81,3 +81,57 @@ export type EvidenceLineageV1 = Readonly<{
   schema: "EvidenceLineageV1";
   relations: readonly EvidenceLineageRelationV1[];
 }>;
+
+export type QualificationClaimV1 =
+  | "subject_binding"
+  | "observation_integrity";
+
+export type QualificationFindingStatusV1 =
+  | "pass"
+  | "fail"
+  | "unavailable"
+  | "not_applicable";
+
+export type QualificationFindingV1 = Readonly<{
+  schema: "QualificationFindingV1";
+  observation_id: string;
+  claim: QualificationClaimV1;
+  status: QualificationFindingStatusV1;
+  method: string;
+  evidence_refs: readonly string[];
+}>;
+
+export type EvidenceQualificationPolicyV1 = Readonly<{
+  schema: "EvidenceQualificationPolicyV1";
+  policy_id: string;
+  policy_version: string;
+  allowed_observation_kinds: readonly TrustObservationKindV1[];
+  required_claims: readonly QualificationClaimV1[];
+}>;
+
+export type ObservationQualificationStatusV1 =
+  | "qualified"
+  | "excluded"
+  | "unavailable"
+  | "failed";
+
+export type ObservationQualificationReasonCodeV1 =
+  | "QUALIFIED"
+  | "OBSERVATION_KIND_NOT_ALLOWED"
+  | "REQUIRED_FINDING_PASSED"
+  | "REQUIRED_FINDING_MISSING"
+  | "REQUIRED_FINDING_UNAVAILABLE"
+  | "REQUIRED_FINDING_FAILED";
+
+export type QualificationClaimDecisionV1 = Readonly<{
+  claim: QualificationClaimV1;
+  status: "pass" | "unavailable" | "fail";
+  reason_code: ObservationQualificationReasonCodeV1;
+}>;
+
+export type ObservationQualificationDecisionV1 = Readonly<{
+  observation_id: string;
+  status: ObservationQualificationStatusV1;
+  reason_code: ObservationQualificationReasonCodeV1;
+  claims: readonly QualificationClaimDecisionV1[];
+}>;
