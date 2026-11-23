@@ -1,0 +1,669 @@
+{
+  "schema": "VeraAnchorTrustConformanceCorpusV1",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "case_id": "multiplicity-proven-same",
+      "description": "Two qualified representations proven to describe the same event collapse to one equivalence group.",
+      "input": {
+        "observations": [
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "event-a",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:00:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          },
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-b",
+            "event_id": "event-b",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:30:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          }
+        ],
+        "lineage": {
+          "schema": "EvidenceLineageV1",
+          "relations": [
+            {
+              "schema": "EvidenceLineageRelationV1",
+              "left_observation_id": "obs-a",
+              "right_observation_id": "obs-b",
+              "state": "proven_same",
+              "method": "fixture-lineage",
+              "evidence_refs": ["fixture:lineage"]
+            }
+          ]
+        },
+        "findings": [
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          }
+        ],
+        "policy": {
+          "schema": "EvidenceQualificationPolicyV1",
+          "policy_id": "vera-anchor:execution-qualification",
+          "policy_version": "1",
+          "allowed_observation_kinds": ["execution"],
+          "required_claims": ["subject_binding", "observation_integrity"]
+        },
+        "population_declaration": {
+          "schema": "PopulationDeclarationV1",
+          "basis": "provider_complete",
+          "eligible_events": 1,
+          "observed_events": 1,
+          "method": "fixture-population",
+          "evidence_refs": ["fixture:population"]
+        },
+        "window": {
+          "schema": "TrustEvaluationWindowV1",
+          "effective_at": "2026-11-21T20:00:00.000Z",
+          "window_start": "2026-11-21T17:00:00.000Z",
+          "window_end": "2026-11-21T19:00:00.000Z"
+        }
+      },
+      "expected": {
+        "qualification": {
+          "ok": true,
+          "statuses": {
+            "obs-a": "qualified",
+            "obs-b": "qualified"
+          },
+          "equivalence_groups": [["obs-a", "obs-b"]]
+        },
+        "population": {
+          "ok": true,
+          "basis": "provider_complete",
+          "eligible_events": 1,
+          "observed_events": 1,
+          "qualified_observations": 2,
+          "qualified_equivalence_groups": 1,
+          "collapsed_observations": 1
+        },
+        "snapshot": {
+          "ok": true,
+          "lineage_default_state": "unknown",
+          "digest": "c85dd7c59ecd73403d72ef8ec040a7776358075ffa9ddbfea9463b180086e12f52968bbc8e02b6a89c142df36b67ab189e9737818041bc859f965edfda185319"
+        }
+      }
+    },
+    {
+      "case_id": "unknown-correlation-remains-unknown",
+      "description": "Qualified observations with unknown correlation remain separate equivalence groups without becoming proven independent.",
+      "input": {
+        "observations": [
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "provider-a:event-1",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:00:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          },
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-b",
+            "event_id": "provider-b:event-9",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:30:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          }
+        ],
+        "lineage": {
+          "schema": "EvidenceLineageV1",
+          "relations": [
+            {
+              "schema": "EvidenceLineageRelationV1",
+              "left_observation_id": "obs-a",
+              "right_observation_id": "obs-b",
+              "state": "unknown",
+              "method": "fixture-lineage",
+              "evidence_refs": ["fixture:lineage"]
+            }
+          ]
+        },
+        "findings": [
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          }
+        ],
+        "policy": {
+          "schema": "EvidenceQualificationPolicyV1",
+          "policy_id": "vera-anchor:execution-qualification",
+          "policy_version": "1",
+          "allowed_observation_kinds": ["execution"],
+          "required_claims": ["subject_binding", "observation_integrity"]
+        },
+        "population_declaration": {
+          "schema": "PopulationDeclarationV1",
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 2,
+          "method": "fixture-population",
+          "evidence_refs": ["fixture:population"]
+        },
+        "window": {
+          "schema": "TrustEvaluationWindowV1",
+          "effective_at": "2026-11-21T20:00:00.000Z",
+          "window_start": "2026-11-21T17:00:00.000Z",
+          "window_end": "2026-11-21T19:00:00.000Z"
+        }
+      },
+      "expected": {
+        "qualification": {
+          "ok": true,
+          "statuses": {
+            "obs-a": "qualified",
+            "obs-b": "qualified"
+          },
+          "equivalence_groups": [["obs-a"], ["obs-b"]]
+        },
+        "population": {
+          "ok": true,
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 2,
+          "qualified_observations": 2,
+          "qualified_equivalence_groups": 2,
+          "collapsed_observations": 0
+        },
+        "snapshot": {
+          "ok": true,
+          "lineage_default_state": "unknown"
+        }
+      }
+    },
+    {
+      "case_id": "same-event-id-without-lineage",
+      "description": "Matching claimed event identifiers do not create equivalence without admitted lineage evidence.",
+      "input": {
+        "observations": [
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "claimed-event",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:00:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          },
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-b",
+            "event_id": "claimed-event",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:30:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          }
+        ],
+        "lineage": {
+          "schema": "EvidenceLineageV1",
+          "relations": []
+        },
+        "findings": [
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-b",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          }
+        ],
+        "policy": {
+          "schema": "EvidenceQualificationPolicyV1",
+          "policy_id": "vera-anchor:execution-qualification",
+          "policy_version": "1",
+          "allowed_observation_kinds": ["execution"],
+          "required_claims": ["subject_binding", "observation_integrity"]
+        },
+        "population_declaration": {
+          "schema": "PopulationDeclarationV1",
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 2,
+          "method": "fixture-population",
+          "evidence_refs": ["fixture:population"]
+        },
+        "window": {
+          "schema": "TrustEvaluationWindowV1",
+          "effective_at": "2026-11-21T20:00:00.000Z",
+          "window_start": "2026-11-21T17:00:00.000Z",
+          "window_end": "2026-11-21T19:00:00.000Z"
+        }
+      },
+      "expected": {
+        "qualification": {
+          "ok": true,
+          "statuses": {
+            "obs-a": "qualified",
+            "obs-b": "qualified"
+          },
+          "equivalence_groups": [["obs-a"], ["obs-b"]]
+        },
+        "population": {
+          "ok": true,
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 2,
+          "qualified_observations": 2,
+          "qualified_equivalence_groups": 2,
+          "collapsed_observations": 0
+        },
+        "snapshot": {
+          "ok": true,
+          "lineage_default_state": "unknown"
+        }
+      }
+    },
+    {
+      "case_id": "selective-submitted-sample",
+      "description": "A successful submitted sample does not manufacture an eligible population or complete coverage.",
+      "input": {
+        "observations": [
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "event-a",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:00:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          }
+        ],
+        "lineage": {
+          "schema": "EvidenceLineageV1",
+          "relations": []
+        },
+        "findings": [
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "subject_binding",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          },
+          {
+            "schema": "QualificationFindingV1",
+            "observation_id": "obs-a",
+            "claim": "observation_integrity",
+            "status": "pass",
+            "method": "fixture-verifier",
+            "evidence_refs": ["fixture:verification"]
+          }
+        ],
+        "policy": {
+          "schema": "EvidenceQualificationPolicyV1",
+          "policy_id": "vera-anchor:execution-qualification",
+          "policy_version": "1",
+          "allowed_observation_kinds": ["execution"],
+          "required_claims": ["subject_binding", "observation_integrity"]
+        },
+        "population_declaration": {
+          "schema": "PopulationDeclarationV1",
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 1,
+          "method": "fixture-population",
+          "evidence_refs": ["fixture:population"]
+        },
+        "window": {
+          "schema": "TrustEvaluationWindowV1",
+          "effective_at": "2026-11-21T20:00:00.000Z",
+          "window_start": "2026-11-21T17:00:00.000Z",
+          "window_end": "2026-11-21T19:00:00.000Z"
+        }
+      },
+      "expected": {
+        "qualification": {
+          "ok": true,
+          "statuses": {
+            "obs-a": "qualified"
+          },
+          "equivalence_groups": [["obs-a"]]
+        },
+        "population": {
+          "ok": true,
+          "basis": "submitted_sample",
+          "eligible_events": null,
+          "observed_events": 1,
+          "qualified_observations": 1,
+          "qualified_equivalence_groups": 1,
+          "collapsed_observations": 0
+        },
+        "snapshot": {
+          "ok": true,
+          "lineage_default_state": "unknown"
+        }
+      }
+    },
+    {
+      "case_id": "replayed-observation-id",
+      "description": "Repeated observation identifiers fail closed instead of creating additional influence.",
+      "input": {
+        "observations": [
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "event-a",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:00:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          },
+          {
+            "schema": "TrustObservationV1",
+            "observation_id": "obs-a",
+            "event_id": "event-a-replay",
+            "kind": "execution",
+            "occurred_at": "2026-11-21T18:30:00.000Z",
+            "subject_binding": {
+              "schema": "SubjectBindingV1",
+              "subject": {
+                "schema": "TrustSubjectV1",
+                "primary": {
+                  "scheme": "hcs14_uaid",
+                  "value": "uaid:did:example.com:agents:test"
+                },
+                "aliases": []
+              },
+              "role": "executor",
+              "method": "fixture",
+              "evidence_refs": ["fixture:binding"]
+            },
+            "scope": {
+              "schema": "TrustScopeV1",
+              "network": {
+                "namespace": "hedera",
+                "id": "mainnet"
+              }
+            },
+            "evidence_refs": ["fixture:evidence"]
+          }
+        ],
+        "lineage": {
+          "schema": "EvidenceLineageV1",
+          "relations": []
+        },
+        "findings": [],
+        "policy": {
+          "schema": "EvidenceQualificationPolicyV1",
+          "policy_id": "vera-anchor:execution-qualification",
+          "policy_version": "1",
+          "allowed_observation_kinds": ["execution"],
+          "required_claims": ["subject_binding", "observation_integrity"]
+        },
+        "population_declaration": {
+          "schema": "PopulationDeclarationV1",
+          "basis": "unknown",
+          "eligible_events": null,
+          "observed_events": null,
+          "method": "fixture-population",
+          "evidence_refs": ["fixture:population"]
+        },
+        "window": {
+          "schema": "TrustEvaluationWindowV1",
+          "effective_at": "2026-11-21T20:00:00.000Z",
+          "window_start": "2026-11-21T17:00:00.000Z",
+          "window_end": "2026-11-21T19:00:00.000Z"
+        }
+      },
+      "expected": {
+        "qualification": {
+          "ok": false,
+          "code": "DUPLICATE_OBSERVATION_ID"
+        }
+      }
+    }
+  ]
+}
