@@ -62,3 +62,22 @@ export type TrustObservationV1 = Readonly<{
   scope: TrustScopeV1;
   evidence_refs: readonly string[];
 }>;
+
+export type EvidenceCorrelationStateV1 =
+  | "proven_same"
+  | "proven_different"
+  | "unknown";
+
+export type EvidenceLineageRelationV1 = Readonly<{
+  schema: "EvidenceLineageRelationV1";
+  left_observation_id: string;
+  right_observation_id: string;
+  state: EvidenceCorrelationStateV1;
+  method: string;
+  evidence_refs: readonly string[];
+}>;
+
+export type EvidenceLineageV1 = Readonly<{
+  schema: "EvidenceLineageV1";
+  relations: readonly EvidenceLineageRelationV1[];
+}>;
