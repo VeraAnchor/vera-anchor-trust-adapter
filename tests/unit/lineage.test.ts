@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   groupTrustObservationsV1,
-  type EvidenceLineageV1,
   type EvidenceLineageRelationV1,
+  type EvidenceLineageV1,
   type TrustObservationV1,
 } from "../../src/index.js";
 
@@ -78,7 +78,7 @@ describe("observation lineage grouping", () => {
 
     expect(result).toEqual({
       ok: true,
-      groups: [{ observation_ids: ["obs-a", "obs-b"] }],
+      equivalence_groups: [{ observation_ids: ["obs-a", "obs-b"] }],
     });
   });
 
@@ -93,7 +93,7 @@ describe("observation lineage grouping", () => {
 
     expect(result).toEqual({
       ok: true,
-      groups: [
+      equivalence_groups: [
         { observation_ids: ["obs-a"] },
         { observation_ids: ["obs-b"] },
       ],
@@ -111,7 +111,7 @@ describe("observation lineage grouping", () => {
 
     expect(result).toEqual({
       ok: true,
-      groups: [
+      equivalence_groups: [
         { observation_ids: ["obs-a"] },
         { observation_ids: ["obs-b"] },
       ],
@@ -133,7 +133,9 @@ describe("observation lineage grouping", () => {
 
     expect(result).toEqual({
       ok: true,
-      groups: [{ observation_ids: ["obs-a", "obs-b", "obs-c"] }],
+      equivalence_groups: [
+        { observation_ids: ["obs-a", "obs-b", "obs-c"] },
+      ],
     });
   });
 
@@ -198,13 +200,11 @@ describe("observation lineage grouping", () => {
   });
 
   it("does not let repeated lineage assertions create more groups", () => {
-    const observations = [
-      observation("obs-a", "event-a"),
-      observation("obs-b", "event-b"),
-    ];
-
     const result = groupTrustObservationsV1(
-      observations,
+      [
+        observation("obs-a", "event-a"),
+        observation("obs-b", "event-b"),
+      ],
       lineage(
         relation("obs-a", "obs-b", "proven_same"),
         relation("obs-a", "obs-b", "proven_same"),
@@ -214,7 +214,30 @@ describe("observation lineage grouping", () => {
 
     expect(result).toEqual({
       ok: true,
-      groups: [{ observation_ids: ["obs-a", "obs-b"] }],
+      equivalence_groups: [{ observation_ids: ["obs-a", "obs-b"] }],
+    });
+  });
+
+  it("rejects proven-same relations across different trust contexts", () => {
+    const first = observation("obs-a", "event-a");
+    const base = observation("obs-b", "event-b");
+    const second: TrustObservationV1 = {
+      ...base,
+      subject_binding: {
+        ...base.subject_binding,
+        role: "requester",
+      },
+    };
+
+    const result = groupTrustObservationsV1(
+      [first, second],
+      lineage(relation("obs-a", "obs-b", "proven_same"))
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      code: "INCOMPATIBLE_PROVEN_SAME_RELATION",
+      observation_ids: ["obs-a", "obs-b"],
     });
   });
 });

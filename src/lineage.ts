@@ -1,7 +1,7 @@
 // ============================================================================
 // File: src/lineage.ts
 // Purpose:
-//   Deterministically group observations using admitted lineage relations.
+//   Deterministically group observations proven to represent the same event.
 // ============================================================================
 
 import type {
@@ -10,7 +10,7 @@ import type {
   TrustObservationV1,
 } from "./contracts.js";
 
-export type ObservationGroupV1 = Readonly<{
+export type ObservationEquivalenceGroupV1 = Readonly<{
   observation_ids: readonly string[];
 }>;
 
@@ -20,12 +20,13 @@ export type ObservationGroupingFailureCodeV1 =
   | "UNKNOWN_OBSERVATION_REFERENCE"
   | "SELF_LINEAGE_RELATION"
   | "LINEAGE_RELATION_CONFLICT"
-  | "LINEAGE_CONTRADICTION";
+  | "LINEAGE_CONTRADICTION"
+  | "INCOMPATIBLE_PROVEN_SAME_RELATION";
 
 export type ObservationGroupingResultV1 =
   | Readonly<{
       ok: true;
-      groups: readonly ObservationGroupV1[];
+      equivalence_groups: readonly ObservationEquivalenceGroupV1[];
     }>
   | Readonly<{
       ok: false;
@@ -50,11 +51,40 @@ function mergeState(
   return null;
 }
 
+function sameOptional(left: string | undefined, right: string | undefined) {
+  return (left ?? "") === (right ?? "");
+}
+
+function sameContext(
+  left: TrustObservationV1,
+  right: TrustObservationV1
+): boolean {
+  const leftSubject = left.subject_binding.subject.primary;
+  const rightSubject = right.subject_binding.subject.primary;
+  const leftCapability = left.scope.capability;
+  const rightCapability = right.scope.capability;
+
+  return (
+    left.kind === right.kind &&
+    left.subject_binding.role === right.subject_binding.role &&
+    leftSubject.scheme === rightSubject.scheme &&
+    leftSubject.value === rightSubject.value &&
+    sameOptional(leftSubject.registry, rightSubject.registry) &&
+    left.scope.network.namespace === right.scope.network.namespace &&
+    left.scope.network.id === right.scope.network.id &&
+    sameOptional(left.scope.task_class, right.scope.task_class) &&
+    leftCapability?.namespace === rightCapability?.namespace &&
+    leftCapability?.id === rightCapability?.id &&
+    sameOptional(leftCapability?.version, rightCapability?.version)
+  );
+}
+
 export function groupTrustObservationsV1(
   observations: readonly TrustObservationV1[],
   lineage: EvidenceLineageV1
 ): ObservationGroupingResultV1 {
   const parent = new Map<string, string>();
+  const byId = new Map<string, TrustObservationV1>();
 
   for (const observation of observations) {
     const id = observation.observation_id.trim();
@@ -71,6 +101,7 @@ export function groupTrustObservationsV1(
     }
 
     parent.set(id, id);
+    byId.set(id, observation);
   }
 
   function find(id: string): string {
@@ -121,6 +152,23 @@ export function groupTrustObservationsV1(
         code: "SELF_LINEAGE_RELATION",
         observation_ids: [left],
       };
+    }
+
+    if (relation.state === "proven_same") {
+      const leftObservation = byId.get(left);
+      const rightObservation = byId.get(right);
+
+      if (
+        !leftObservation ||
+        !rightObservation ||
+        !sameContext(leftObservation, rightObservation)
+      ) {
+        return {
+          ok: false,
+          code: "INCOMPATIBLE_PROVEN_SAME_RELATION",
+          observation_ids: [...pair(left, right)],
+        };
+      }
     }
 
     const [canonicalLeft, canonicalRight] = pair(left, right);
@@ -175,13 +223,18 @@ export function groupTrustObservationsV1(
     }
   }
 
-  const groups = [...grouped.values()]
+  const equivalenceGroups = [...grouped.values()]
     .map((observationIds) => ({
       observation_ids: observationIds.sort(),
     }))
-    .sort((left, right) =>
-      left.observation_ids[0]!.localeCompare(right.observation_ids[0]!)
-    );
+    .sort((left, right) => {
+      const a = left.observation_ids[0]!;
+      const b = right.observation_ids[0]!;
+      return a < b ? -1 : a > b ? 1 : 0;
+    });
 
-  return { ok: true, groups };
+  return {
+    ok: true,
+    equivalence_groups: equivalenceGroups,
+  };
 }

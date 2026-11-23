@@ -20,7 +20,7 @@ import type {
 
 import {
   groupTrustObservationsV1,
-  type ObservationGroupV1,
+  type ObservationEquivalenceGroupV1,
   type ObservationGroupingFailureCodeV1,
 } from "./lineage.js";
 
@@ -36,7 +36,7 @@ export type QualificationResultV1 =
       policy_id: string;
       policy_version: string;
       decisions: readonly ObservationQualificationDecisionV1[];
-      groups: readonly ObservationGroupV1[];
+      equivalence_groups: readonly ObservationEquivalenceGroupV1[];
     }>
   | Readonly<{
       ok: false;
@@ -233,7 +233,11 @@ export function qualifyTrustObservationsV1(
 
   const decisions = [...observations]
     .sort((left, right) =>
-      left.observation_id.localeCompare(right.observation_id)
+      left.observation_id < right.observation_id
+        ? -1
+        : left.observation_id > right.observation_id
+          ? 1
+          : 0
     )
     .map((observation) =>
       observationDecision(
@@ -274,6 +278,6 @@ export function qualifyTrustObservationsV1(
     policy_id: policy.policy_id,
     policy_version: policy.policy_version,
     decisions,
-    groups: grouping.groups,
+    equivalence_groups: grouping.equivalence_groups,
   };
 }

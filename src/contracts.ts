@@ -135,3 +135,33 @@ export type ObservationQualificationDecisionV1 = Readonly<{
   reason_code: ObservationQualificationReasonCodeV1;
   claims: readonly QualificationClaimDecisionV1[];
 }>;
+
+export type PopulationBasisV1 =
+  | "provider_complete"
+  | "submitted_sample"
+  | "unknown";
+
+export type PopulationDeclarationV1 = Readonly<{
+  schema: "PopulationDeclarationV1";
+  basis: PopulationBasisV1;
+  eligible_events: number | null;
+  observed_events: number | null;
+  method: string;
+  evidence_refs: readonly string[];
+}>;
+
+export type PopulationStatementV1 = Readonly<{
+  schema: "PopulationStatementV1";
+  basis: PopulationBasisV1;
+  eligible_events: number | null;
+  observed_events: number | null;
+  projected_observations: number;
+  qualified_observations: number;
+  excluded_observations: number;
+  unavailable_observations: number;
+  failed_observations: number;
+  qualified_equivalence_groups: number;
+  collapsed_observations: number;
+  method: string;
+  evidence_refs: readonly string[];
+}>;

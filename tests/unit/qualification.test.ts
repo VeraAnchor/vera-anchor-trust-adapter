@@ -131,7 +131,7 @@ describe("trust observation qualification", () => {
           ],
         },
       ],
-      groups: [{ observation_ids: ["obs-a"] }],
+      equivalence_groups: [{ observation_ids: ["obs-a"] }],
     });
   });
 
@@ -151,7 +151,7 @@ describe("trust observation qualification", () => {
       status: "unavailable",
       reason_code: "REQUIRED_FINDING_MISSING",
     });
-    expect(result.groups).toEqual([]);
+    expect(result.equivalence_groups).toEqual([]);
   });
 
   it("fails qualification when a required claim is contradicted", () => {
@@ -172,7 +172,7 @@ describe("trust observation qualification", () => {
       status: "failed",
       reason_code: "REQUIRED_FINDING_FAILED",
     });
-    expect(result.groups).toEqual([]);
+    expect(result.equivalence_groups).toEqual([]);
   });
 
   it("fails closed when pass and fail findings conflict", () => {
@@ -212,7 +212,7 @@ describe("trust observation qualification", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(result.groups).toEqual([
+    expect(result.equivalence_groups).toEqual([
       { observation_ids: ["obs-a", "obs-b"] },
     ]);
   });
@@ -241,7 +241,7 @@ describe("trust observation qualification", () => {
         status: "unavailable",
       },
     ]);
-    expect(result.groups).toEqual([
+    expect(result.equivalence_groups).toEqual([
       { observation_ids: ["obs-a"] },
     ]);
   });
@@ -261,7 +261,7 @@ describe("trust observation qualification", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(result.groups).toEqual([
+    expect(result.equivalence_groups).toEqual([
       { observation_ids: ["obs-a"] },
     ]);
   });
