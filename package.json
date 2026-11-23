@@ -1,0 +1,54 @@
+{
+  "name": "@veraanchor/trust-adapter",
+  "version": "0.0.0",
+  "description": "Deterministic, portable trust qualification and HCS-25 trust scoring for verifiable agent operating evidence",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": "^22.15.0 || ^24.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vera-anchor": {
+      "types": "./dist/vera-anchor.d.ts",
+      "import": "./dist/vera-anchor.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "conformance",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VeraAnchor/vera-anchor-trust-adapter.git"
+  },
+  "keywords": [
+    "vera-anchor",
+    "agent-trust",
+    "hcs-25",
+    "hedera",
+    "trust-scores",
+    "provenance",
+    "ai-agents"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.0"
+  }
+}
